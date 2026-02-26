@@ -1,0 +1,6 @@
+@AircraftRepair_HostAddress = http://localhost:5198
+
+GET {{AircraftRepair_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

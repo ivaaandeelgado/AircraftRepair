@@ -4,6 +4,7 @@ using AircraftRepair.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AircraftRepair.Migrations
 {
     [DbContext(typeof(AircraftRepairDbContext))]
-    partial class AircraftRepairDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260301211636_FixTaskStateColumn2")]
+    partial class FixTaskStateColumn2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,10 +59,7 @@ namespace AircraftRepair.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAssignment"));
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AppUserIdUser")
+                    b.Property<int>("AppUserIdUser")
                         .HasColumnType("int");
 
                     b.Property<int>("IdTask")
@@ -68,13 +68,14 @@ namespace AircraftRepair.Migrations
                     b.Property<int>("IdUser")
                         .HasColumnType("int");
 
-                    b.HasKey("IdAssignment");
+                    b.Property<int>("TaskItemIdTask")
+                        .HasColumnType("int");
 
-                    b.HasIndex("AppUserId");
+                    b.HasKey("IdAssignment");
 
                     b.HasIndex("AppUserIdUser");
 
-                    b.HasIndex("IdTask");
+                    b.HasIndex("TaskItemIdTask");
 
                     b.ToTable("Assignments");
                 });
@@ -204,22 +205,16 @@ namespace AircraftRepair.Migrations
             modelBuilder.Entity("AircraftRepair.Entities.Assignment", b =>
                 {
                     b.HasOne("AircraftRepair.Entities.AppUser", "AppUser")
-                        .WithMany()
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_Assignments_AppUsers_IdUser");
-
-                    b.HasOne("AircraftRepair.Entities.AppUser", null)
                         .WithMany("Assignments")
-                        .HasForeignKey("AppUserIdUser");
+                        .HasForeignKey("AppUserIdUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AircraftRepair.Entities.TaskItem", "TaskItem")
                         .WithMany("Assignments")
-                        .HasForeignKey("IdTask")
+                        .HasForeignKey("TaskItemIdTask")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_Assignments_Tasks_IdTask");
+                        .IsRequired();
 
                     b.Navigation("AppUser");
 

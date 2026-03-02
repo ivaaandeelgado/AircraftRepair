@@ -24,10 +24,29 @@ public class AircraftRepairDbContext : DbContext
             new TaskState { IdState = 2, Code = 2, Value = "inProgress" },
             new TaskState { IdState = 3, Code = 3, Value = "done" }
         );
+        // Seed inicial de permisos
         modelBuilder.Entity<Permission>().HasData(
              new Permission { IdPermission = 1, Code = 1, Value = "Admin" },
              new Permission { IdPermission = 2, Code = 2, Value = "User" }
         );
+        // Configuración de la relación entre TaskItem y TaskState
+        modelBuilder.Entity<TaskItem>()
+        .HasOne(t => t.TaskState)
+        .WithMany()
+        .HasForeignKey(t => t.IdState)
+        .HasConstraintName("FK_Tasks_TaskStates_IdState");
+        // Configuracion de la relacion entre TaskItem y Assignements
+        modelBuilder.Entity<Assignment>()
+        .HasOne(a => a.AppUser)
+        .WithMany()
+        .HasForeignKey(a => a.AppUserId)
+        .HasConstraintName("FK_Assignments_AppUsers_IdUser");
+
+        modelBuilder.Entity<Assignment>()
+        .HasOne(a => a.TaskItem)
+        .WithMany(t => t.Assignments)
+        .HasForeignKey(a => a.IdTask)
+        .HasConstraintName("FK_Assignments_Tasks_IdTask");
 
         base.OnModelCreating(modelBuilder);
     }

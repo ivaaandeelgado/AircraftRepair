@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AircraftRepair.Controllers;
-
-
+[ApiController]
 [Route("api/[controller]")]
 public class AssignementsController : ControllerBase{
 

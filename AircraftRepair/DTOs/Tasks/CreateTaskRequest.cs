@@ -4,6 +4,6 @@
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public DateTime? DateDelivery { get; set; }
+        public String DateDelivery { get; set; }
     }
 }

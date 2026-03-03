@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AircraftRepair.Controllers;
 
 
+[Route("api/[controller]")]
 public class AssignementsController : ControllerBase{
 
     private readonly AircraftRepairDbContext _db;
@@ -18,7 +19,7 @@ public class AssignementsController : ControllerBase{
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPut("{id}/assignees")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> SetAssignees(int id, SetAssigneesRequest request)
     {
         var task = await _db.Tasks.FindAsync(id);

@@ -5,6 +5,8 @@ using AircraftRepair.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Security.Claims;
 
 namespace AircraftRepair.Controllers;
 
@@ -29,27 +31,46 @@ public class TaskController : ControllerBase{
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateTask(CreateTaskRequest request)
     {
-
-
         var defaultState = await _db.TaskStates
             .FirstOrDefaultAsync(s => s.Code == 1); // 1 = Pending
 
         if (defaultState == null)
             return BadRequest("Default state not found");
 
+        DateTime? parsedDateDelivery = null;
+
+        if (!string.IsNullOrWhiteSpace(request.DateDelivery))
+        {
+            if (DateTime.TryParseExact(
+                    request.DateDelivery,
+                    "yyyy-MM-ddTHH:mm:ss",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.AssumeUniversal,
+                    out DateTime result))
+            {
+                parsedDateDelivery = result;
+            }
+            else
+            {
+                return BadRequest("DateDelivery must be in format yyyy-MM-ddTHH:mm:ss");
+            }
+        }
+
         var task = new TaskItem
         {
             Title = request.Title,
             Description = request.Description,
             DateAssignment = DateTime.UtcNow,
-            DateDelivery = request.DateDelivery,
+            DateDelivery = parsedDateDelivery,
             IdState = defaultState.IdState
         };
 
         _db.Tasks.Add(task);
         await _db.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetTaskById), new { id = task.IdTask }, task.IdTask);
+        return CreatedAtAction(nameof(GetTaskById),
+            new { id = task.IdTask },
+            task.IdTask);
     }
 
 
@@ -139,6 +160,40 @@ public class TaskController : ControllerBase{
         }).ToList();
 
         return Ok(result);
+    }
+
+    [Authorize]
+    [HttpGet("my-tasks")]
+    public async Task<ActionResult<List<TaskListItemDto>>> GetMyTasks()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userIdClaim == null)
+            return Unauthorized();
+
+        int userId = int.Parse(userIdClaim);
+
+        var tasks = await _db.Tasks
+            .Include(t => t.TaskState)
+            .Include(t => t.Assignments)
+                .ThenInclude(a => a.AppUser)
+            .Where(t => t.Assignments.Any(a => a.AppUserId == userId))
+            .Select(t => new TaskListItemDto
+            {
+                IdTask = t.IdTask,
+                Title = t.Title,
+                IdState = t.IdState,
+                StateValue = t.TaskState.Value,
+                DateAssignment = t.DateAssignment,
+                DateDelivery = t.DateDelivery,
+                IsUnassigned = !t.Assignments.Any(),
+                IsOverdue = t.DateDelivery.HasValue
+                            && t.DateDelivery < DateTime.UtcNow
+                            && t.IdState != 3
+            })
+            .ToListAsync();
+
+        return Ok(tasks);
     }
 
 }

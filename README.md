@@ -36,11 +36,6 @@ Para probar la aplicación se han de seguir los siguientes pasos:
   · Modificar tarea (Asignaciones o estado)
   · Visualizar todas las tareas
 
-- **Funcionalidades de usuario**
-  · Visualizar tareas assignadas
-  · Modificar estado tarea
-      
-
 - **Funcionlidades Usuarios**
 - Visualizar tareas que tienen asignadasa
 - Modificar estado tarea

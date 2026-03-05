@@ -31,6 +31,7 @@ Para probar la aplicación se han de seguir los siguientes pasos:
 *************Funcionalidades de la app*************
 
 - **Funcionalidades Admin**
+  
   · Crear tarea
   · Eliminar tarea
   · Modificar tarea (Asignaciones o estado)

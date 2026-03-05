@@ -9,9 +9,9 @@ Creada por Olga Segura Gayete e Ivan Delgado Galvan
 
 Para probar la aplicación se han de seguir los siguientes pasos:
 - Clonar ambos repositorios (API + Angular)
-- 
+
 - **Generar base de datos:**
-    · Ejecutar en Admin Console Manager "Update-Database" (Nos construye la BD en SQL Server)
+    - Ejecutar en Admin Console Manager "Update-Database" (Nos construye la BD en SQL Server)
   
 - **Crear usuarios de prueba:**
 · Ejecutamos API

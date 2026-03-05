@@ -12,6 +12,8 @@ namespace AircraftRepair.DTOs.Tasks
         public int StateCode { get; set; }
         public string StateValue { get; set; } = string.Empty;
 
+        public String description {  get; set; }
+
         public DateTime? DateAssignment { get; set; }
         public DateTime? DateDelivery { get; set; }
 

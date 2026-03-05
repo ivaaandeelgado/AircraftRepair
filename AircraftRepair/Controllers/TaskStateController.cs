@@ -1,5 +1,6 @@
 ﻿using AircraftRepair.Data;
 using AircraftRepair.DTOs.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +31,7 @@ public class TaskStateController : ControllerBase
 
     // PATCH: api/Task/5/state PATCH update task state
     [HttpPatch("{id}/state")]
+    [Authorize]
     public async Task<IActionResult> UpdateTaskState(int id, UpdateTaskStateRequest request)
     {
         var task = await _db.Tasks.FindAsync(id);

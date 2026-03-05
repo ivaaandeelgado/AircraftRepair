@@ -13,6 +13,8 @@ namespace AircraftRepair.DTOs.Tasks
 
         public DateTime? DateAssignment { get; set; }
         public DateTime? DateDelivery { get; set; }
+        
+        public String description { get; set; }
 
         public List<UserListItemDto> Assignees { get; set; } = new();
 

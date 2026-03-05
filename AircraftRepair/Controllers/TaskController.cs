@@ -76,6 +76,7 @@ public class TaskController : ControllerBase{
 
     // GET: api/Task/5 GET task by id
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<TaskListItemDto>> GetTaskById(int id)
     {
         var task = await _db.Tasks
@@ -111,6 +112,7 @@ public class TaskController : ControllerBase{
     }
     // PUT: api/Task/5 PUT update task
     [HttpPut]
+    [Authorize]
     public async Task<IActionResult> UpdateTask(int id, UpdateTaskRequest request)
     {
         var task = await _db.Tasks.FindAsync(id);
@@ -131,6 +133,7 @@ public class TaskController : ControllerBase{
 
     // GET: api/Task GET all tasks
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<List<TaskListItemDto>>> GetTasks()
     {
         var tasks = await _db.Tasks
@@ -148,6 +151,7 @@ public class TaskController : ControllerBase{
             StateValue = t.TaskState.Value,
             DateAssignment = t.DateAssignment,
             DateDelivery = t.DateDelivery,
+            description = t.Description,
             Assignees = t.Assignments.Select(a => new UserListItemDto
             {
                 IdUser = a.AppUser.IdUser,
@@ -186,6 +190,7 @@ public class TaskController : ControllerBase{
                 StateValue = t.TaskState.Value,
                 DateAssignment = t.DateAssignment,
                 DateDelivery = t.DateDelivery,
+                description = t.Description,
                 IsUnassigned = !t.Assignments.Any(),
                 IsOverdue = t.DateDelivery.HasValue
                             && t.DateDelivery < DateTime.UtcNow
@@ -194,6 +199,21 @@ public class TaskController : ControllerBase{
             .ToListAsync();
 
         return Ok(tasks);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTask(int id)
+    {
+        var task = await _db.Tasks.FindAsync(id);
+
+        if (task == null)
+            return NotFound();
+
+        _db.Tasks.Remove(task);
+        await _db.SaveChangesAsync();
+
+        return NoContent();
     }
 
 }
